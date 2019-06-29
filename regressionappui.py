@@ -12,7 +12,7 @@ from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as Navigati
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1099, 600)
+        MainWindow.resize(900, 650)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(300, 0, 271, 61))
+        self.label_5.setGeometry(QtCore.QRect(300, 0, 400, 61))
         font = QtGui.QFont()
         font.setPointSize(20)
         self.label_5.setFont(font)
