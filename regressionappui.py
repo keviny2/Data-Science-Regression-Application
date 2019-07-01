@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
         self.label_5.setGeometry(QtCore.QRect(300, 0, 400, 61))
-        font = QtGui.QFont()
+        font = QtGui.QFont()    
         font.setPointSize(20)
         self.label_5.setFont(font)
         self.label_5.setObjectName("label_5")
@@ -184,7 +184,7 @@ class Ui_MainWindow(object):
         self.actionRedo.setText(_translate("MainWindow", "Redo"))
         
     def browse(self):
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "File Explorer", "", "CSV Files (*.csv);;Excel Files (*.xlsx *.xlsm)")
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "File Explorer", "", "CSV Files (*.csv);;Excel Files (*.xlsx)")
         self.inputFileTextBox.setText(fileName)
         
     def run_regression(self):

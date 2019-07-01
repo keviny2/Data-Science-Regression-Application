@@ -17,16 +17,24 @@ stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 def logistic_regression(self, y, x1, multivariate):
     print('Performing Logistic Regression!')
     x = sm.add_constant(x1)
-    reg = sm.Logit(y, x)
-    results = reg.fit()
+    results = sm.Logit(y, x).fit()
+    return results
     
-    if multivariate == 0:
+def linear_regression(self, y, x1, multivariate):
+    print('Performing Linear Regression!')
+    x = sm.add_constant(x1)
+    results = sm.OLS(y,x).fit()
+    return results
+    
+def render_plot(self, x, y, regressionType, multivariate):
+    if (multivariate == 0):
         self.regressionPlot.canvas.axes.clear()
-        self.regressionPlot.canvas.axes.scatter(x1, y)
-        self.regressionPlot.canvas.axes.set_title('Logistic Regression')
+        self.regressionPlot.canvas.axes.scatter(x, y)
+        self.regressionPlot.canvas.axes.set_title(regressionType)
         self.regressionPlot.canvas.draw()
     else:
         self.regressionPlot.canvas.axes.clear()
-        self.regressionPlot.canvas.axes.draw()
+        self.regressionPlot.canvas.draw()
         
-    self.statisticsTextBox.setPlainText(results.summary().as_csv())
+def render_statistics(self, results):
+    self.statisticsTextBox.setPlainText(results.summary().as_text()) 

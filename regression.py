@@ -19,28 +19,32 @@ from sklearn import preprocessing
 
 def perform_regression(self, regressionType, inputFilePath, standardize, multivariate, 
                        responseVariable, predictors, categoricalVariables):
-    print ('performing regression')
-    responseVariable, data = preprocess(inputFilePath, responseVariable, categoricalVariables,
-                                        predictors, standardize)
-    print ('finished preprocessing')
+    
     fileName, fileExtension = os.path.splitext(inputFilePath)
+    if not os.path.exists(inputFilePath):
+        errorDialog = QtWidgets.QErrorMessage()
+        errorDialog.showMessage('File path does not exist')
+        
     if (fileExtension == '.xlsx'):
-        excel_regression(inputFilePath)
-    elif (fileExtension == '.xlsm'):
-        macro_excel_regression(inputFilePath)
+        data = pd.read_excel(inputFilePath)
+    elif (fileExtension == '.csv'):
+        data = pd.read_csv(inputFilePath)
     else:
-        csv_regression(self, data, regressionType, responseVariable, multivariate)
-
-def preprocess(inputFilePath, responseVariable, categoricalVariables,
+        return
+    
+    preprocessedResponseVariable, preprocessedData = preprocess(data, responseVariable, categoricalVariables,
+                                                                predictors, standardize)
+    
+    do_regression(self, data, preprocessedData, regressionType, preprocessedResponseVariable, multivariate)
+    
+def preprocess(data, responseVariable, categoricalVariables,
                predictors, standardize):
     errorDialog = QtWidgets.QErrorMessage()
     _, categoricalVariablesList = get_variable_list(categoricalVariables)
     predictorVariablesString, predictorVariablesList = get_variable_list(predictors)
-    responseVariableProcessed = responseVariable.strip()
-    data = pd.read_csv(inputFilePath)
-    if not os.path.exists(inputFilePath):
-        errorDialog.showMessage('File path does not exist')
-    if not responseVariableProcessed in data.columns:
+    preprocessedResponseVariable = responseVariable.strip()
+    
+    if not preprocessedResponseVariable in data.columns:
         errorDialog.showMessage('Response Variable does not exist in data table')
     for categoricalVariable in categoricalVariablesList:
         if not categoricalVariable in data.columns:
@@ -48,30 +52,30 @@ def preprocess(inputFilePath, responseVariable, categoricalVariables,
     for predictor in predictorVariablesList:
         if not predictor in data.columns:
             errorDialog.showMessage(f'{predictor} does not exist in data table')
-    
-    print ('got through conditionals')        
-    processedData = preprocess_data(data, categoricalVariablesList, predictorVariablesString,
-                                    responseVariableProcessed, standardize)  
-    return responseVariableProcessed, processedData
+         
+    preprocessedData = preprocess_data(data, categoricalVariablesList, predictorVariablesString,
+                                    preprocessedResponseVariable, standardize)  
+    return preprocessedResponseVariable, preprocessedData
 
 def preprocess_data(data, categoricalVariablesList, predictorVariablesString, 
-                    responseVariableProcessed, standardize):
+                    preprocessedResponseVariable, standardize):
     dataDropNullColumns = data.dropna(how='any', axis=1)
     dataDropNullRows = dataDropNullColumns.dropna(how='any', axis=0)
     dataDropUnnammedColumns = dataDropNullRows.loc[:, ~dataDropNullRows.columns.str.contains('^Unnamed')]
-    dataDropColumns = dataDropUnnammedColumns[[predictorVariablesString, responseVariableProcessed]]
+    dataDropColumns = dataDropUnnammedColumns[[predictorVariablesString, preprocessedResponseVariable]]
     data = dataDropColumns.copy()
     
-    for column in categoricalVariablesList:
-        data[column] = data[column].astype('category')
-        data[column] = data[column].cat.codes
-        
+    if categoricalVariablesList[0]:
+        for column in categoricalVariablesList:
+            data[column] = data[column].astype('category')
+            data[column] = data[column].cat.codes
+            
     if (standardize == 2):
         predictors = data[[predictorVariablesString]]
         numCols = predictors.columns[predictors.dtypes.apply(lambda c: np.issubdtype(c, np.number))]
         scaler = preprocessing.StandardScaler()
         data[numCols] = scaler.fit_transform(data[numCols])
-        
+            
     return data
     
 def get_variable_list(inputString):
@@ -79,22 +83,19 @@ def get_variable_list(inputString):
     inputStringList = inputStringNoWhiteSpace.split(',')
     return inputStringNoWhiteSpace, inputStringList
         
-def csv_regression(self, data, regressionType, responseVariable, multivariate):        
-    print('CSV!')
-    y = data[responseVariable]
-    x1 = data.drop(responseVariable, 1)
+def do_regression(self, data, preprocessedData, regressionType, responseVariable, multivariate):        
+    print('doing regression!')
+    y = preprocessedData[responseVariable]
+    x1 = preprocessedData.drop(responseVariable, 1)
     func = get_regression_func(regressionType)
-    func(self, y, x1, multivariate)
-    
-def excel_regression(inputFilePath):
-    print('Excel!')
-    
-def macro_excel_regression(inputFilePath):
-    print('Macro!')
+    results = func(self, y, x1, multivariate)
+
+    render_plot(self, x, y, regressionType, multivariate, results.params)
+    render_statistics(self, results)
     
 def get_regression_func(regressionType):
     regressionTypes = {
-        1: "Linear Regression",
+        "Linear Regression": linear_regression,
         "Logistic Regression": logistic_regression,
         3: "Polynomial Regression",
         4: "Stepwise Regression",
@@ -105,4 +106,21 @@ def get_regression_func(regressionType):
     func = regressionTypes.get(regressionType, lambda: "Invalid regression type")
     return func
 
-from regressiontypes import logistic_regression
+def render_plot(self, x, y, regressionType, multivariate, params):
+    if (multivariate == 0):
+        self.regressionPlot.canvas.axes.clear()
+        self.regressionPlot.canvas.axes.scatter(x, y)
+        yhat = x*params.size + params.const
+        print (x)
+        print (yhat, params)
+        fig = self.regressionPlot.canvas.axes.plot(x, yhat, lw=4, c='orange', label='regression line')
+        self.regressionPlot.canvas.axes.set_title(regressionType)
+        self.regressionPlot.canvas.draw()
+    else:
+        self.regressionPlot.canvas.axes.clear()
+        self.regressionPlot.canvas.draw()
+        
+def render_statistics(self, results):
+    self.statisticsTextBox.setPlainText(results.summary().as_text()) 
+
+from regressiontypes import logistic_regression, linear_regression
