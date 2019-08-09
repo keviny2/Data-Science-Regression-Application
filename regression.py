@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 27 12:03:33 2019
-
 @author: Kevin Yang
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication
 import os
 import numpy as np
 import pandas as pd
@@ -17,13 +17,21 @@ from scipy import stats
 stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 from sklearn import preprocessing
 
-def perform_regression(self, regressionType, inputFilePath, standardize, multivariate, 
-                       responseVariable, predictors, categoricalVariables):
-    
-    fileName, fileExtension = os.path.splitext(inputFilePath)
+errorDialog = QtWidgets.QErrorMessage()
+errorDialog.setWindowTitle('Error')
+
+def perform_regression(self, regressionType, inputFilePath, standardize, 
+                       degree, alpha, responseVariable, predictors, 
+                       categoricalVariables):
+    print ('perform regression')
+    QApplication.instance().processEvents()
     if not os.path.exists(inputFilePath):
-        errorDialog = QtWidgets.QErrorMessage()
-        errorDialog.showMessage('File path does not exist')
+        errorDialog.showMessage('File path invalid')
+        self.movie.stop()
+        self.loaderLabel.hide()
+        return
+    
+    _, fileExtension = os.path.splitext(inputFilePath)
         
     if (fileExtension == '.xlsx'):
         data = pd.read_excel(inputFilePath)
@@ -32,95 +40,102 @@ def perform_regression(self, regressionType, inputFilePath, standardize, multiva
     else:
         return
     
-    preprocessedResponseVariable, preprocessedData = preprocess(data, responseVariable, categoricalVariables,
-                                                                predictors, standardize)
+    preprocessedData, preprocessedResponseVariable, isMultivariate = preprocess(self, data, responseVariable, categoricalVariables,
+                                                                                 predictors, standardize, regressionType)
     
-    do_regression(self, data, preprocessedData, regressionType, preprocessedResponseVariable, multivariate)
+    do_regression(self, preprocessedData, regressionType, 
+                  preprocessedResponseVariable, isMultivariate,
+                  degree, alpha)
     
-def preprocess(data, responseVariable, categoricalVariables,
-               predictors, standardize):
-    errorDialog = QtWidgets.QErrorMessage()
-    _, categoricalVariablesList = get_variable_list(categoricalVariables)
-    predictorVariablesString, predictorVariablesList = get_variable_list(predictors)
+def preprocess(self, data, responseVariable, categoricalVariables,
+               predictors, standardize, regressionType):
+    print ('preprocess')
+    QApplication.instance().processEvents()
+    categoricalVariablesList = get_variable_list(categoricalVariables)
+    predictorVariablesList = get_variable_list(predictors)
+    isMultivariate = len(predictorVariablesList) > 1
     preprocessedResponseVariable = responseVariable.strip()
     
+    missingColumnNames = ""
     if not preprocessedResponseVariable in data.columns:
-        errorDialog.showMessage('Response Variable does not exist in data table')
-    for categoricalVariable in categoricalVariablesList:
-        if not categoricalVariable in data.columns:
-            errorDialog.showMessage(f'{categoricalVariable} does not exist in data table')
+        missingColumnNames += preprocessedResponseVariable + ','
     for predictor in predictorVariablesList:
         if not predictor in data.columns:
-            errorDialog.showMessage(f'{predictor} does not exist in data table')
+            missingColumnNames += predictor + ','
+    for categoricalVariable in categoricalVariablesList:
+        if not categoricalVariable in data.columns:
+            missingColumnNames += categoricalVariable + ','
+    if not missingColumnNames == "":
+        missingColumnNames = missingColumnNames[:-1]
+        errorDialog.showMessage(f'{missingColumnNames} not in the data table')
+        self.movie.stop()
+        self.loaderLabel.hide()
+        return
          
-    preprocessedData = preprocess_data(data, categoricalVariablesList, predictorVariablesString,
-                                    preprocessedResponseVariable, standardize)  
-    return preprocessedResponseVariable, preprocessedData
+    preprocessedData = preprocess_data(data, categoricalVariablesList, predictorVariablesList,
+                                    preprocessedResponseVariable, standardize)
+    
+    return preprocessedData, preprocessedResponseVariable, isMultivariate
 
-def preprocess_data(data, categoricalVariablesList, predictorVariablesString, 
+def preprocess_data(data, categoricalVariablesList, predictorVariablesList, 
                     preprocessedResponseVariable, standardize):
-    dataDropNullColumns = data.dropna(how='any', axis=1)
+    print ('preprocess data')
+    QApplication.instance().processEvents()
+    dataDropNullColumns = data.dropna(how='all', axis=1)
     dataDropNullRows = dataDropNullColumns.dropna(how='any', axis=0)
     dataDropUnnammedColumns = dataDropNullRows.loc[:, ~dataDropNullRows.columns.str.contains('^Unnamed')]
-    dataDropColumns = dataDropUnnammedColumns[[predictorVariablesString, preprocessedResponseVariable]]
+    relevantColumns = predictorVariablesList + [preprocessedResponseVariable]
+    dataDropColumns = dataDropUnnammedColumns[relevantColumns]
     data = dataDropColumns.copy()
     
-    if categoricalVariablesList[0]:
+    if len(categoricalVariablesList) > 0:
         for column in categoricalVariablesList:
             data[column] = data[column].astype('category')
             data[column] = data[column].cat.codes
             
     if (standardize == 2):
-        predictors = data[[predictorVariablesString]]
-        numCols = predictors.columns[predictors.dtypes.apply(lambda c: np.issubdtype(c, np.number))]
+        print ("standardizing")
+        predictors = data[predictorVariablesList]
+        numericColumns = predictors.columns[predictors.dtypes.apply(lambda c: np.issubdtype(c, np.number))]
         scaler = preprocessing.StandardScaler()
-        data[numCols] = scaler.fit_transform(data[numCols])
+        data[numericColumns] = scaler.fit_transform(data[numericColumns])
             
     return data
     
 def get_variable_list(inputString):
-    inputStringNoWhiteSpace = inputString.replace(" ", "")
-    inputStringList = inputStringNoWhiteSpace.split(',')
-    return inputStringNoWhiteSpace, inputStringList
+    print ('get variable list')
+    QApplication.instance().processEvents()
+    if inputString:
+        inputStringNoWhiteSpace = inputString.replace(" ", "")
+        inputStringList = inputStringNoWhiteSpace.split(',')
+        return inputStringList
+    else:
+        return list()
         
-def do_regression(self, data, preprocessedData, regressionType, responseVariable, multivariate):        
+def do_regression(self, preprocessedData, regressionType, responseVariable,
+                  isMultivariate, degree, alpha):        
     print('doing regression!')
-    y = preprocessedData[responseVariable]
-    x1 = preprocessedData.drop(responseVariable, 1)
+    QApplication.instance().processEvents()
+    y = preprocessedData[[responseVariable]]
+    x = preprocessedData.drop(responseVariable, 1)
     func = get_regression_func(regressionType)
-    results = func(self, y, x1, multivariate)
-
-    render_plot(self, x, y, regressionType, multivariate, results.params)
-    render_statistics(self, results)
+    if func == elasticNet_regression:
+        func(self, y, x, isMultivariate, alpha)
+    elif func == polynomial_regression:
+        func(self, y, x, isMultivariate, degree)
+    else: 
+        func(self, y, x, isMultivariate)
     
 def get_regression_func(regressionType):
     regressionTypes = {
         "Linear Regression": linear_regression,
         "Logistic Regression": logistic_regression,
-        3: "Polynomial Regression",
-        4: "Stepwise Regression",
-        5: "Ridge Regression",
-        6: "Lasso Regression",
-        7: "ElasticNet Regression"
+        "Polynomial Regression": polynomial_regression,
+        "Ridge Regression": ridge_regression,
+        "Lasso Regression": lasso_regression,
+        "ElasticNet Regression": elasticNet_regression
         }
     func = regressionTypes.get(regressionType, lambda: "Invalid regression type")
     return func
 
-def render_plot(self, x, y, regressionType, multivariate, params):
-    if (multivariate == 0):
-        self.regressionPlot.canvas.axes.clear()
-        self.regressionPlot.canvas.axes.scatter(x, y)
-        yhat = x*params.size + params.const
-        print (x)
-        print (yhat, params)
-        fig = self.regressionPlot.canvas.axes.plot(x, yhat, lw=4, c='orange', label='regression line')
-        self.regressionPlot.canvas.axes.set_title(regressionType)
-        self.regressionPlot.canvas.draw()
-    else:
-        self.regressionPlot.canvas.axes.clear()
-        self.regressionPlot.canvas.draw()
-        
-def render_statistics(self, results):
-    self.statisticsTextBox.setPlainText(results.summary().as_text()) 
-
-from regressiontypes import logistic_regression, linear_regression
+from regressiontypes import logistic_regression, linear_regression, polynomial_regression, ridge_regression, lasso_regression, elasticNet_regression
