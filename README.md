@@ -1,2 +1,2 @@
-# Regression-App
-Python GUI app that performs various regressions
+# Regression Application
+Python GUI app that performs different types of regressions
