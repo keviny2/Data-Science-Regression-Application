@@ -3,13 +3,12 @@
 # Form implementation generated from reading ui file 'regressionApp2.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
-#
-# WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
+# UI Code generated using QtDesigner
 class Ui_RegressionApp(object):
     def setupUi(self, RegressionApp):
         RegressionApp.setObjectName("RegressionApp")
@@ -391,8 +390,6 @@ class Ui_RegressionApp(object):
         self.statusbar = QtWidgets.QStatusBar(RegressionApp)
         self.statusbar.setObjectName("statusbar")
         RegressionApp.setStatusBar(self.statusbar)
-        self.actionNew_Regression = QtWidgets.QAction(RegressionApp)
-        self.actionNew_Regression.setObjectName("actionNew_Regression")
         self.actionSave_Graph = QtWidgets.QAction(RegressionApp)
         self.actionSave_Graph.setObjectName("actionSave_Graph")
         self.actionSave_Statistics = QtWidgets.QAction(RegressionApp)
@@ -408,6 +405,7 @@ class Ui_RegressionApp(object):
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
         
+        ## Code for interactive UI
         self.browseButton.clicked.connect(self.browse)
         self.browseButton.setAutoDefault(True)
         self.typeComboBox.currentTextChanged.connect(self.on_combobox_changed)
@@ -423,9 +421,9 @@ class Ui_RegressionApp(object):
         RegressionApp.setWindowIcon(QtGui.QIcon("piechart.png"))
         RegressionApp.addToolBar(NavigationToolbar(self.regressionPlot.canvas, self.regressionPlot))
 
+        ## Code for menu bar
         self.actionClear_All.triggered.connect(self.clear_all)
         self.actionExit.triggered.connect(self.exit_app)
-        self.actionNew_Regression.triggered.connect(self.new_regression)
         self.actionSave_Graph.triggered.connect(self.save_graph)
         self.actionSave_Statistics.triggered.connect(self.save_statistics)
 
@@ -442,6 +440,7 @@ class Ui_RegressionApp(object):
         RegressionApp.setTabOrder(self.runRegressionButton, self.statisticsTextBox)
         RegressionApp.setTabOrder(self.statisticsTextBox, self.regressionPlot)
 
+    ## Code generated from QtDesigner
     def retranslateUi(self, RegressionApp):
         _translate = QtCore.QCoreApplication.translate
         RegressionApp.setWindowTitle(_translate("RegressionApp", "Regression Application"))
@@ -470,8 +469,6 @@ class Ui_RegressionApp(object):
         self.browseButton.setText(_translate("RegressionApp", "Browse"))
         self.label_4.setText(_translate("RegressionApp", "*Required"))
         self.menuFile.setTitle(_translate("RegressionApp", "File"))
-        self.actionNew_Regression.setText(_translate("RegressionApp", "New Regression"))
-        self.actionNew_Regression.setShortcut(_translate("RegressionApp", "Ctrl+N"))
         self.actionSave_Graph.setText(_translate("RegressionApp", "Save Graph"))
         self.actionSave_Graph.setShortcut(_translate("RegressionApp", "Ctrl+G"))
         self.actionSave_Statistics.setText(_translate("RegressionApp", "Save Statistics"))
@@ -481,10 +478,13 @@ class Ui_RegressionApp(object):
         self.actionExit.setText(_translate("RegressionApp", "Exit"))
         self.actionExit.setShortcut(_translate("RegressionApp", "Esc"))
 
+    ## Executed when browse button is clicked
     def browse(self):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Browse", "", "CSV Files (*.csv);;Excel Files (*.xlsx)")
         self.inputFileTextBox.setText(fileName)
         
+    ## Show degree and alpha text box depending on what type of regression
+    ## user selects
     def on_combobox_changed(self):
         if self.typeComboBox.currentText() == "Polynomial Regression":
             self.degreeLabel.show()
@@ -501,9 +501,9 @@ class Ui_RegressionApp(object):
             self.degreeTextBox.hide()
             self.alphaLabel.hide()
             self.alphaTextBox.hide()
-        
+       
+    ## Restores form to initial state
     def clear_all(self):
-        print('clear all')
         index = self.typeComboBox.findText("")
         self.typeComboBox.setCurrentIndex(index)
         self.inputFileTextBox.setText("")
@@ -517,33 +517,22 @@ class Ui_RegressionApp(object):
         self.regressionPlot.canvas.axes.clear()
         self.regressionPlot.canvas.draw()
         
+    ## Closes application
     def exit_app(self):
         sys.exit()
         
-    def new_regression(self):
-        print ('new regression')
-        import sys
-        app2 = QtWidgets.QApplication(sys.argv)
-        app2.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
-        RegressionApp2 = QtWidgets.QMainWindow()
-        ui2 = Ui_RegressionApp()
-        ui2.setupUi(RegressionApp2)
-        RegressionApp2.showMaximized()
-        RegressionApp2.show()
-        sys.exit(app2.exec_())
-        
+    ## Opens file explorer for user to save graph as a png file
     def save_graph(self):
-        print ('save graph')
         filePath, _ = QtWidgets.QFileDialog.getSaveFileName(None, "Save Image", "", "PNG File (*.png);;PDF File (*.pdf)")
-        print (type(self.regressionPlot))
         self.regressionPlot.canvas.figure.savefig(filePath)
         
+    ## Opens file explorer for user to save statistics as a txt file
     def save_statistics(self):
-        print ('save statistics')
         filePath, _ = QtWidgets.QFileDialog.getSaveFileName(None, "Save File", "", "Text File (*.txt);;CSV File (*.csv);;JSON File (*.json)")
         with open(filePath, 'a+') as f:
             f.write(self.statisticsTextBox.toPlainText())
         
+    ## Executed when user clicks runRegression button
     def run_regression(self):
         self.loaderLabel.show()
         self.movie.start()

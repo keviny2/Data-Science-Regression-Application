@@ -3,13 +3,11 @@
 Created on Thu Jun 27 12:03:33 2019
 @author: Kevin Yang
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 import os
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
@@ -17,13 +15,15 @@ from scipy import stats
 stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 from sklearn import preprocessing
 
+## Error Dialog object that is displayed if process runs into any error
 errorDialog = QtWidgets.QErrorMessage()
 errorDialog.setWindowTitle('Error')
 
+## Checks if file path is valid and determines what type of file has been
+## selected for the regression then preprocesses data and runs regression
 def perform_regression(self, regressionType, inputFilePath, standardize, 
                        degree, alpha, responseVariable, predictors, 
                        categoricalVariables):
-    print ('perform regression')
     QApplication.instance().processEvents()
     if not os.path.exists(inputFilePath):
         errorDialog.showMessage('File path invalid')
@@ -47,9 +47,11 @@ def perform_regression(self, regressionType, inputFilePath, standardize,
                   preprocessedResponseVariable, isMultivariate,
                   degree, alpha)
     
+## Reads user inputs and checks to see if inputted response, predictor, and
+## categorical variables exist in the selected file, then proceeds to 
+## preprocess the data itself
 def preprocess(self, data, responseVariable, categoricalVariables,
                predictors, standardize, regressionType):
-    print ('preprocess')
     QApplication.instance().processEvents()
     categoricalVariablesList = get_variable_list(categoricalVariables)
     predictorVariablesList = get_variable_list(predictors)
@@ -77,9 +79,11 @@ def preprocess(self, data, responseVariable, categoricalVariables,
     
     return preprocessedData, preprocessedResponseVariable, isMultivariate
 
+## Preprocesses data by dropping any columns that are all null, removing rows 
+## that contain null values, converting categorical data into its respective
+## codes, and standardizing inputs if user checked the standardize checkbox
 def preprocess_data(data, categoricalVariablesList, predictorVariablesList, 
                     preprocessedResponseVariable, standardize):
-    print ('preprocess data')
     QApplication.instance().processEvents()
     dataDropNullColumns = data.dropna(how='all', axis=1)
     dataDropNullRows = dataDropNullColumns.dropna(how='any', axis=0)
@@ -94,7 +98,6 @@ def preprocess_data(data, categoricalVariablesList, predictorVariablesList,
             data[column] = data[column].cat.codes
             
     if (standardize == 2):
-        print ("standardizing")
         predictors = data[predictorVariablesList]
         numericColumns = predictors.columns[predictors.dtypes.apply(lambda c: np.issubdtype(c, np.number))]
         scaler = preprocessing.StandardScaler()
@@ -102,8 +105,8 @@ def preprocess_data(data, categoricalVariablesList, predictorVariablesList,
             
     return data
     
+## Returns an array of substrings from input string delimited by commas
 def get_variable_list(inputString):
-    print ('get variable list')
     QApplication.instance().processEvents()
     if inputString:
         inputStringNoWhiteSpace = inputString.replace(" ", "")
@@ -112,9 +115,10 @@ def get_variable_list(inputString):
     else:
         return list()
         
+## Determines what type of regression user selected and performs the regression
+## of interest
 def do_regression(self, preprocessedData, regressionType, responseVariable,
                   isMultivariate, degree, alpha):        
-    print('doing regression!')
     QApplication.instance().processEvents()
     y = preprocessedData[[responseVariable]]
     x = preprocessedData.drop(responseVariable, 1)
@@ -126,6 +130,7 @@ def do_regression(self, preprocessedData, regressionType, responseVariable,
     else: 
         func(self, y, x, isMultivariate)
     
+## Returns function corresponding to regressionType parameter
 def get_regression_func(regressionType):
     regressionTypes = {
         "Linear Regression": linear_regression,
