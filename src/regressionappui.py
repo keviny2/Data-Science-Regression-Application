@@ -8,6 +8,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
+app = QtWidgets.QApplication(sys.argv)
+
 # UI Code generated using QtDesigner
 class Ui_RegressionApp(object):
     def setupUi(self, RegressionApp):
@@ -559,8 +561,7 @@ from mplwidget import MplWidget
 from regression import perform_regression
 
 if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
+    import sys    
     app.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
     RegressionApp = QtWidgets.QMainWindow()
     ui = Ui_RegressionApp()
