@@ -1,0 +1,4 @@
+- catch errors up top at the ui level, not scattered throughout the program
+- Should not crash if degree is not specified for polynomial regression
+- Should not crash for anything, just send error message
+- look into whats up with standardizing for polynomial regression
