@@ -18,7 +18,7 @@ class MplWidget(QWidget):
 
         QWidget.__init__(self, parent)
 
-        self.canvas = FigureCanvas(Figure(facecolor='lightgrey'))
+        self.canvas = FigureCanvas(Figure())
         
         vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.canvas)

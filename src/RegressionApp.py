@@ -362,7 +362,7 @@ class Ui_RegressionApp(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.browseButton.sizePolicy().hasHeightForWidth())
         self.browseButton.setSizePolicy(sizePolicy)
-        self.browseButton.setMaximumSize(QtCore.QSize(55, 16777215))
+        self.browseButton.setMaximumSize(QtCore.QSize(65, 16777215))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.browseButton.setFont(font)

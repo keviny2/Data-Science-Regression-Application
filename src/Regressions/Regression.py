@@ -1,4 +1,6 @@
 from PyQt5.QtWidgets import QApplication
+import seaborn as sns
+sns.set()
 
 class Regression:
 
