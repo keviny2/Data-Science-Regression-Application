@@ -1,4 +1,0 @@
-- Should not crash if degree is not specified for polynomial regression
-- Should not crash if path not specified when saving statistics
-    - Ctrl+S when regression done, don't input anything as path and exit
-- look into whats up with standardizing for polynomial regression

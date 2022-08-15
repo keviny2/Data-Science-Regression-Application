@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QApplication
 
-from src.Regressions.ElasticNetRegression import ElasticNetRegression
-from src.Regressions.LassoRegression import LassoRegression
-from src.Regressions.LinearRegression import LinearRegression
-from src.Regressions.LogisticRegression import LogisticRegression
-from src.Regressions.PolynomialRegression import PolynomialRegression
-from src.Regressions.RidgeRegression import RidgeRegression
+from Regressions.ElasticNetRegression import ElasticNetRegression
+from Regressions.LassoRegression import LassoRegression
+from Regressions.LinearRegression import LinearRegression
+from Regressions.LogisticRegression import LogisticRegression
+from Regressions.PolynomialRegression import PolynomialRegression
+from Regressions.RidgeRegression import RidgeRegression
 
 
 class RegressionFactory:

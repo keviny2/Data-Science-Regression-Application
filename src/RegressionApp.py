@@ -456,8 +456,8 @@ class Ui_RegressionApp(object):
         self.actionExit.setText(_translate("RegressionApp", "Exit"))
         self.actionExit.setShortcut(_translate("RegressionApp", "Esc"))
 
-from src.mplwidget import MplWidget
-from src.InteractiveRegressionApp import InteractiveRegressionApp
+from mplwidget import MplWidget
+from InteractiveRegressionApp import InteractiveRegressionApp
 
 
 if __name__ == "__main__":

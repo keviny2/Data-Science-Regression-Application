@@ -3,7 +3,7 @@ import statsmodels.api as sm
 from sklearn.preprocessing import PolynomialFeatures
 import pandas as pd
 import numpy as np
-from src.Regressions.Regression import Regression
+from .Regression import Regression
 # from scipy import stats
 # stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 

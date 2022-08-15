@@ -4,7 +4,7 @@ import statsmodels.api as sm
 from scipy.special import expit
 #stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df)
 import pandas as pd
-from src.Regressions.Regression import Regression
+from .Regression import Regression
 
 class LogisticRegression(Regression):
 

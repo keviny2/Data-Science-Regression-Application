@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 
-from src.Dataset import Dataset
-from src.RegressionFactory import RegressionFactory
-from src.Validator import Validator
+from Dataset import Dataset
+from RegressionFactory import RegressionFactory
+from Validator import Validator
 
 
 class RegressionService:

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication
 import statsmodels.api as sm
-from src.Regressions.Regression import Regression
+from .Regression import Regression
 
 class RidgeRegression(Regression):
 
