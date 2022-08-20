@@ -428,7 +428,7 @@ class Ui_RegressionApp(object):
         self.categoricalLabel.setText(_translate("RegressionApp", "Categorical Variables:"))
         self.responseLabel.setText(_translate("RegressionApp", "*Response:"))
         self.predictorsLabel.setText(_translate("RegressionApp", "*Predictors:"))
-        self.statisticsLabel.setText(_translate("RegressionApp", "Statistics"))
+        self.statisticsLabel.setText(_translate("RegressionApp", "Results"))
         self.runRegressionButton.setText(_translate("RegressionApp", "Run"))
         self.title.setText(_translate("RegressionApp", "Perform a Regression!"))
         self.label_5.setText(_translate("RegressionApp", "Choose regression type:"))
@@ -440,7 +440,7 @@ class Ui_RegressionApp(object):
         self.typeComboBox.setItemText(6, _translate("RegressionApp", "ElasticNet Regression"))
         self.inputFileLabel.setText(_translate("RegressionApp", "*Input File:"))
         self.typeLabel.setText(_translate("RegressionApp", "*Type:"))
-        self.label_6.setText(_translate("RegressionApp", "*.csv or .xlsx file"))
+        self.label_6.setText(_translate("RegressionApp", "*.csv, .tsv or .xlsx file"))
         self.standardizeCheckBox.setText(_translate("RegressionApp", "Standardize:"))
         self.degreeLabel.setText(_translate("RegressionApp", "*Degree:"))
         self.alphaLabel.setText(_translate("RegressionApp", "*Alpha:"))
@@ -460,7 +460,7 @@ from mplwidget import MplWidget
 from InteractiveRegressionApp import InteractiveRegressionApp
 
 
-if __name__ == "__main__":
+def run():
     import sys
     app.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
     RegressionApp = QtWidgets.QMainWindow()

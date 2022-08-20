@@ -20,6 +20,8 @@ class Dataset:
             return pd.read_excel(self.inputFilePath)
         elif fileExtension == '.csv':
             return pd.read_csv(self.inputFilePath)
+        elif fileExtension == '.tsv':
+            return pd.read_csv(self.inputFilePath, delimiter='\t')
         else:
             raise(Exception('Invalid file extension'))
 

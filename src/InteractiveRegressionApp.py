@@ -41,7 +41,7 @@ class InteractiveRegressionApp:
 
     # Executed when browse button is clicked
     def browse(self):
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Browse", "", "CSV Files (*.csv);;Excel Files (*.xlsx)")
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Browse", "", "CSV Files (*.csv);;Excel Files (*.xlsx);;TSV Files (*.tsv)")
         self.regressionAppUI.inputFileTextBox.setText(fileName)
         
     # Show degree and alpha text box depending on what type of regression
