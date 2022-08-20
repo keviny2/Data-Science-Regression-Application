@@ -4,7 +4,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
-from RegressionService import RegressionService
+from src.RegressionService import RegressionService
 
 errorDialog = QtWidgets.QErrorMessage()
 errorDialog.setWindowTitle('Error')

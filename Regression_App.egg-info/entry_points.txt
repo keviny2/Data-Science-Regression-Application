@@ -1,0 +1,2 @@
+[console_scripts]
+regression-app = src.cli:run
