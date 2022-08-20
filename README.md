@@ -16,7 +16,13 @@ pip install git+https://git@github.com/keviny2/Regression-App.git
 - matplotlib
 
 ## Usage
-Simply run `regression-app` in the command line to run the application!
+Simply run the command `regression-app` in the command line to run the application!
 
+```
+(base) kevin@LAPTOP-J06PC9QG:/mnt/c/Users/kevin/OneDrive/Documents/$ regression-app
+```
+
+<br>
+<br>
 
 ![](images/screenshot.PNG)
