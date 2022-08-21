@@ -25,4 +25,4 @@ Simply run the command `regression-app` in the command line to run the applicati
 
 <br>
 
-![](images/screenshot.PNG)
+![](images/Regression_App.PNG)
